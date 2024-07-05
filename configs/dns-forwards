@@ -1,0 +1,6 @@
+server=8.8.8.8
+#server=77.88.8.8
+server=/local/10.177.164.6
+server=/local/10.177.164.7
+#server=/freeipa.am.local/10.177.164.6
+#server=/freeipa2.am.local/10.177.164.6
