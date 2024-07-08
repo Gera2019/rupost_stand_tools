@@ -46,8 +46,33 @@ if [ -z "$nodesNum" ]; then
     nodesNum=2
 fi
 
+checkPackage=$(apt list lxc | grep installed)
+if [[ -z $checkPackage ]]; then
+    sed -i 's/.*uu.*//g' /etc/apt/sources.list
+    sed -i 's/\.*deb cdrom/\# deb cdrom/g' /etc/apt/sources.list
+    sed -i 's/\#.*deb https/deb https/g' /etc/apt/sources.list
+    ## Устанавливаем необходимые пакеты для развертывания среды LXC
+    apt update
+    apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils -y
+    systemctl restart libvirtd
+
+    ## Настраиваем конфигурацию lxc-net
+    cat << EOF | sudo tee /etc/default/lxc-net
+USE_LXC_BRIDGE="true"
+LXC_BRIDGE="lxcbr0"
+LXC_ADDR="10.20.30.1"
+LXC_NETMASK="255.255.255.0"
+LXC_NETWORK="10.20.30.0/24"
+LXC_DHCP_RANGE="10.20.30.100,10.20.30.250"
+LXC_DHCP_MAX="150"
+LXC_DHCP_CONFILE="/etc/dnsmasq.conf"
+LXC_DOMAIN=""
+EOF
+    systemctl restart lxc-net.service
+fi
+
 grp=$(lxc-ls -1 | grep ^grp | cut -d '-' -f 1 | tr -d [:alpha:] | sort -nr | head -1)
-if [ $newClusterGroup ]; then
+if [[ $newClusterGroup ]]; then
     if [ $grpNum ]; then
         grp=$grpNum
     else
@@ -56,7 +81,7 @@ if [ $newClusterGroup ]; then
     bash $TOOLS_PATH/rm-grp.sh $grp
     echo "Удаление завершено"
     fi
-elif [ $grp ]; then
+elif [ $(lxc-ls -1 | grep ^grp | cut -d '-' -f 1 | tr -d [:alpha:] | sort -nr | head -1) ]; then
     grpNum=$(($grp+1))
 else
     grpNum=1
@@ -75,6 +100,8 @@ sed -i -e '$a10\.20\.30\.1\t'"$HOSTNAME" -e '/'"$HOSTNAME"'/d' /etc/hosts
 #####################################################################################
 
 ## Если мы не находим родительского контейнера astra-se, то считаем, что установка "чистая" с нуля
+
+
 if [ -z "$(lxc-ls -1 | grep 'astra-se')" ]
 then
     echo "Создаём родительский контейнер astra-se"
@@ -116,24 +143,9 @@ then
             exit 1
     fi
 
-## Включаем режим маршрутизации между интерфейсами сетевого адаптера хоста
-    sed -i 's/#net\.ipv4\.ip\_forward\=./net\.ipv4\.ip\_forward\=1/g' /etc/sysctl.conf
-    sysctl net.ipv4.conf.all.forwarding=1
-    sysctl net.ipv4.conf.all.proxy_arp=1
-    sysctl -p
+
      
-## Настраиваем конфигурацию lxc-net
-    cat << EOF | sudo tee /etc/default/lxc-net
-USE_LXC_BRIDGE="true"
-LXC_BRIDGE="lxcbr0"
-LXC_ADDR="10.20.30.1"
-LXC_NETMASK="255.255.255.0"
-LXC_NETWORK="10.20.30.0/24"
-LXC_DHCP_RANGE="10.20.30.100,10.20.30.250"
-LXC_DHCP_MAX="150"
-LXC_DHCP_CONFILE="/etc/dnsmasq.conf"
-LXC_DOMAIN=""
-EOF
+
 	
 	systemctl stop lxc-net.service
 
