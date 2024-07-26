@@ -5,7 +5,7 @@ TOOLS_PATH="./tools"
 CONFIGS_PATH="./configs"
 
 ## Домен почтового сервера
-HOSTDOMAIN=$(sed -n '/^\s*#/!{p;q}' $CONFIGS_PATH/ldap-domains)
+HOSTDOMAIN=$(sed -n '/^\s*#/!{p;q}' ../$CONFIGS_PATH/ldap-domains)
 
 #####################################################################################
 
