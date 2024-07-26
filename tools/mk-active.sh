@@ -51,10 +51,23 @@ if [ $deactivateFlag ]; then
 		done
 else
 	for node in ${nodesList[*]};
-		do
-			status=$(lxc-info -s $node | cut -d " " -f 11)
-			[[ "$status" =~ "STOPPED" ]] && lxc-start $node
-		done
+	do
+		status=$(lxc-info -s $node | cut -d " " -f 11)
+		if [[ "$status" =~ "STOPPED" ]]; then
+			echo "стартую $node"
+			lxc-start $node
+			
+			until [ "$(sudo lxc-info -n $node -iH | head -1)" ]
+			do
+				printf "."
+				sleep 2
+			done
+			
+			ipHost=$(sudo lxc-info -n $node -iH | head -1)
+			x=$(echo $node | tr -d -c [:digit:])
+			sed -i -e '$a'"$ipHost"'\t'"$node"'' -e '/'"$node"'/d' /etc/hosts
+		fi
+	done
 	`which python3` $TOOLS_PATH/get_haproxy_conf.py $nodesCount $NN > /etc/haproxy/haproxy.cfg
 	systemctl restart haproxy
 fi

@@ -302,6 +302,7 @@ EOF
 lxc.start.auto = 1
 lxc.start.delay = 5
 lxc.start.order = 5
+lxc.signal.halt = SIGRTMIN+4
 EOF
     sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
 	fi
