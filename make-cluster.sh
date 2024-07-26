@@ -355,11 +355,17 @@ do
     read beginSetupIsTrue
 done
 
+distNum=$(ls -1 $SRC_PATH | sed -n '/^rupost-[0-9]/ p' | wc -l)
+declare -A rupostDistr
+
+for ((i=1; i<=$distNum; i++))
+    do
+        rupostDistr[i]=$(ls -1 src | sed -n '/^rupost-[0-9]/ p' | cut -d$'\n' -f $i)
+    done
+
 if [ $beginSetupIsTrue = "yes" ]; then
     
-    rupostDistr=( $(ls -1 src | sed -n '/^rupost-[0-9]/ p') )
-    
-    while [ ${#rupostDistr[@]} -eq 0 ] 
+    while [ -z $distNum ] 
     do
         echo "Не было найдено ни одного установочного файла РуПост в папке $SRC_PATH"
         sleep 2
@@ -373,32 +379,30 @@ if [ $beginSetupIsTrue = "yes" ]; then
             echo "Программа завершена"
             exit 0 
         fi
-        rupostDistr=( $(ls -1 src | sed -n '/^rupost-[0-9]/ p') )
+        distNum=$(ls -1 $SRC_PATH | sed -n '/^rupost-[0-9]/ p' | wc -l)
     done
 fi
-
-distNum=$(ls -1 $SRC_PATH | sed -n '/^rupost-[0-9]/ p' | wc -l)
 
 if [[ $distNum -gt 0 ]]; then
     echo "Были найдены следующие версии:"
-    j=1
-    for version in ${rupostDistr[@]}
+    
+    for version in "${!rupostDistr[@]}"
     do
-        echo "$j) $version"
-        j=$(($j+1))
+        echo "$version) ${rupostDistr[$version]}$"
     done
+    
     echo "Наберите цифру, соответствующую нужной версии"
     read d
-    echo "Будет установлена версия ${rupostDistr[$(($d-1))]}"
+    echo "Будет установлена версия ${rupostDistr[$d]}"
 
-    rupostDistr=${rupostDistr[$(($d-1))]}
+    rupostInstall=${rupostDistr[$(($d-1))]}
 fi
 
-echo "Будет установлена версия РуПост - $rupostDistr"
+echo "Будет установлена версия РуПост - $rupostInstall"
 
 for ((i=1; i<=$nodesNum; i++))
     do
-        bash $TOOLS_PATH/install-rupost.sh -n $i -g $grpNum -d $SRC_PATH/$rupostDistr
+        bash $TOOLS_PATH/install-rupost.sh -n $i -g $grpNum -d $SRC_PATH/$rupostInstall
     done
 
 
