@@ -143,11 +143,7 @@ then
             exit 1
     fi
 
-
-     
-
-	
-	systemctl stop lxc-net.service
+    systemctl stop lxc-net.service
 
     mkdir -p /etc/dnsmasq.d
     
