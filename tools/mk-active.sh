@@ -45,6 +45,7 @@ nodesCount=$(lxc-ls -1 | grep grp$NN | wc -l)
 
 if [ $deactivateFlag ]; then
 	echo "Остановка контейнеров может занять достаточно длительное время"
+	sed -i "/grp$NN/,$ d" /etc/hosts
 	for node in ${nodesList[*]};
 		do
 			lxc-stop $node
