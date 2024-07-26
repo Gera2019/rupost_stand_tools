@@ -73,16 +73,14 @@ else
 			x=$(echo $node | tr -d -c [:digit:])
 		fi
 		sed -i -e '$a'"$ipHost"'\t'"$node"'' -e '/'"$node"'/d' /etc/hosts
-<<<<<<< HEAD
-		if [[ "$node" =~ "rupost"]]; then
-			sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
-		fi
+
+		[[ "$node" =~ "rupost" ]] && sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
+
 	done
-	
-=======
+
 	done
 	sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
->>>>>>> d086ef6632f7140b6da42f60ab516f131d2e72ba
+
 	`which python3` ./get_haproxy_conf.py $(($nodesCount-1)) $NN > /etc/haproxy/haproxy.cfg
 	systemctl restart haproxy
 fi
