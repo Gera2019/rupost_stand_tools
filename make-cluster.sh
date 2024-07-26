@@ -349,7 +349,7 @@ echo ""
 #####################################################################################
 ## Установка сервера РуПост на подготовленные ноды кластера
 
-while [[ ! "$beginSetupIsTrue" =~ "no" ]] || [[ ! "$beginSetupIsTrue" =~ "yes" ]] 
+while [[ !"$beginSetupIsTrue" =~ "no" ]] && [[ !"$beginSetupIsTrue" =~ "yes" ]] 
 do
     echo "Установить сервер Рупост во все экземпляры? (наберите yes или no)"
     read beginSetupIsTrue
@@ -364,7 +364,7 @@ if [ $beginSetupIsTrue = "yes" ]; then
         echo "Не было найдено ни одного установочного файла РуПост в папке $SRC_PATH"
         sleep 2
     
-        while [[ ! "$answer" =~ "no" ]] || [[ ! "$answer" =~ "yes" ]] 
+        while [[ !"$answer" =~ "no" ]] && [[ !"$answer" =~ "yes" ]] 
         do
             echo "Скопируйте в $SRC_PATH установочный файл РуПост и наберите yes для продолжения или no для завершения программы"
             read answer
