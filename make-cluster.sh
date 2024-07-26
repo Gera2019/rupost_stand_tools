@@ -346,7 +346,7 @@ echo ""
 #####################################################################################
 ## Установка сервера РуПост на подготовленные ноды кластера
 
-while [[ !"$beginSetupIsTrue" =~ "no" ]] && [[ !"$beginSetupIsTrue" =~ "yes" ]] 
+while [[ ! "$beginSetupIsTrue" =~ "no" ]] && [[ ! "$beginSetupIsTrue" =~ "yes" ]] 
 do
     echo "Установить сервер Рупост во все экземпляры? (наберите yes или no)"
     read beginSetupIsTrue
@@ -357,7 +357,7 @@ declare -A rupostDistr
 
 for ((i=1; i<=$distNum; i++))
     do
-        rupostDistr[i]=$(ls -1 src | sed -n '/^rupost-[0-9]/ p' | cut -d$'\n' -f $i)
+        rupostDistr[$i]=$(ls -1 src | sed -n '/^rupost-[0-9]/ p' | cut -d$'\n' -f $i)
     done
 
 if [ $beginSetupIsTrue = "yes" ]; then
@@ -367,7 +367,7 @@ if [ $beginSetupIsTrue = "yes" ]; then
         echo "Не было найдено ни одного установочного файла РуПост в папке $SRC_PATH"
         sleep 2
     
-        while [[ !"$answer" =~ "no" ]] && [[ !"$answer" =~ "yes" ]] 
+        while [[ ! "$answer" =~ "no" ]] && [[ ! "$answer" =~ "yes" ]] 
         do
             echo "Скопируйте в $SRC_PATH установочный файл РуПост и наберите yes для продолжения или no для завершения программы"
             read answer
@@ -385,21 +385,19 @@ if [[ $distNum -gt 0 ]]; then
     
     for version in "${!rupostDistr[@]}"
     do
-        echo "$version) ${rupostDistr[$version]}$"
+        echo "$version) ${rupostDistr[$version]}"
     done
     
     echo "Наберите цифру, соответствующую нужной версии"
     read d
-    echo "Будет установлена версия ${rupostDistr[$d]}"
-
-    rupostInstall=${rupostDistr[$(($d-1))]}
+    rupostInstall=${rupostDistr[$d]}
 fi
 
-echo "Будет установлена версия РуПост - $rupostInstall"
+echo "Будет установлена версия РуПост - ${rupostDistr[$d]}"
 
 for ((i=1; i<=$nodesNum; i++))
     do
-        bash $TOOLS_PATH/install-rupost.sh -n $i -g $grpNum -d $SRC_PATH/$rupostInstall
+        bash $TOOLS_PATH/install-rupost.sh -n $i -g $grpNum -d $SRC_PATH/${rupostDistr[$d]}
     done
 
 
