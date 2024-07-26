@@ -2,6 +2,11 @@
 cd "$(dirname "$0")"
 
 TOOLS_PATH="./tools"
+CONFIGS_PATH="./configs"
+
+## Домен почтового сервера
+HOSTDOMAIN=$(sed -n '/^\s*#/!{p;q}' $CONFIGS_PATH/ldap-domains)
+
 #####################################################################################
 
 if [ "$(whoami)" != "root" ]; then
@@ -63,10 +68,11 @@ else
 				printf "."
 				sleep 2
 			done
-			
+			echo ""
 			ipHost=$(sudo lxc-info -n $node -iH | head -1)
 			x=$(echo $node | tr -d -c [:digit:])
 			sed -i -e '$a'"$ipHost"'\t'"$node"'' -e '/'"$node"'/d' /etc/hosts
+			sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
 		fi
 	done
 	`which python3` ./get_haproxy_conf.py $(($nodesCount-1)) $NN > /etc/haproxy/haproxy.cfg
