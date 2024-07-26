@@ -68,6 +68,6 @@ else
 			sed -i -e '$a'"$ipHost"'\t'"$node"'' -e '/'"$node"'/d' /etc/hosts
 		fi
 	done
-	`which python3` $TOOLS_PATH/get_haproxy_conf.py $nodesCount $NN > /etc/haproxy/haproxy.cfg
+	`which python3` ./get_haproxy_conf.py $(($nodesCount-1)) $NN > /etc/haproxy/haproxy.cfg
 	systemctl restart haproxy
 fi
