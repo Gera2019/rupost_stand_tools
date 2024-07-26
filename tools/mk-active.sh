@@ -71,10 +71,10 @@ else
 			echo ""
 			ipHost=$(sudo lxc-info -n $node -iH | head -1)
 			x=$(echo $node | tr -d -c [:digit:])
-			sed -i -e '$a'"$ipHost"'\t'"$node"'' -e '/'"$node"'/d' /etc/hosts
-			sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
 		fi
 	done
+	sed -i -e '$a'"$ipHost"'\t'"$node"'' -e '/'"$node"'/d' /etc/hosts
+	sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
 	`which python3` ./get_haproxy_conf.py $(($nodesCount-1)) $NN > /etc/haproxy/haproxy.cfg
 	systemctl restart haproxy
 fi
