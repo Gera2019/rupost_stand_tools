@@ -65,6 +65,9 @@ if [[ -z $checkPackage ]]; then
       echo 'conf-dir=/etc/dnsmasq.d' | tee -a /etc/dnsmasq.conf
     fi
 
+    echo "Настройка контейнеров с внутреней сетью 10.20.30.0/24" 1>&1
+    sleep 2
+
     ## Настраиваем конфигурацию lxc-net
     cat << EOF | sudo tee /etc/default/lxc-net
 USE_LXC_BRIDGE="true"
@@ -102,9 +105,6 @@ echo "Будет создана группа $grpNum"
 echo "В группе будет создано $nodesNum экземпляра сервера РуПост"
 sleep 3
     
-echo "Настройка контейнеров с внутреней сетью 10.20.30.0/24" 1>&1
-sleep 2
-
 sed -i -e '$a10\.20\.30\.1\t'"$HOSTNAME" -e '/'"$HOSTNAME"'/d' /etc/hosts
 
 #####################################################################################
@@ -140,10 +140,9 @@ then
 ## Выключаем сервис dnsmasq TODO проверка, что сервис есть вообще
     systemctl stop dnsmasq.service
     systemctl disable dnsmasq.service
-    
     systemctl stop lxc-net.service
-## Проверяем нет ли сервиса bind
 
+## Проверяем нет ли сервиса bind
     if [ "$(fuser 53/udp)" ] || [ "$(fuser 53/tcp)" ]
         then
             echo "У Вас еще все запущен сервис на 53 порту (возможно bind)"
@@ -304,7 +303,6 @@ EOF
 lxc.start.auto = 1
 lxc.start.delay = 5
 lxc.start.order = 5
-lxc.signal.halt = SIGRTMIN+4
 EOF
     sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
 	fi
@@ -327,10 +325,11 @@ systemctl restart memcached
 
 
 ## Настраиваем haproxy если используем локальную сеть контейнеров
+if ! [ -f /etc/haproxy/haproxy.cfg ]; then
+    touch /etc/haproxy/haproxy.cfg 
+fi
 
 systemctl stop haproxy
-rm /etc/haproxy/haproxy.cfg
-
 apt install $SRC_PATH/libcrypt1_4.4.18-4_amd64.deb -y
 apt install $SRC_PATH/haproxy_2.4.18-1~bpo11+1_amd64.deb -y
 
