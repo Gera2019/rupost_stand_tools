@@ -244,7 +244,7 @@ EOF
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipSQL" 'bash -s' < /tmp/sql.sh
 	rm /tmp/sql.sh
 	
-	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo apt install python3 perl dialog syslog-ng dnsutils sysytemd-timesyncd -y'
+	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo apt install python3 perl dialog syslog-ng dnsutils systemd-timesyncd -y'
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo ln -f -s /bin/bash /bin/sh'
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo ln -sf '"$(readlink /etc/localtime)"' /etc/localtime'
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'echo '"$(cat /etc/timezone)"' | sudo tee /etc/timezone'
