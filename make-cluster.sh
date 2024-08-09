@@ -53,7 +53,7 @@ if [[ -z $checkPackage ]]; then
     sed -i 's/\#.*deb https/deb https/g' /etc/apt/sources.list
     ## Устанавливаем необходимые пакеты для развертывания среды LXC
     apt update
-    apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils -y
+    apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy -y
     systemctl restart libvirtd
 
     mkdir -p /etc/dnsmasq.d
@@ -244,7 +244,7 @@ EOF
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipSQL" 'bash -s' < /tmp/sql.sh
 	rm /tmp/sql.sh
 	
-	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo apt install python3 perl dialog syslog-ng -y'
+	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo apt install python3 perl dialog syslog-ng dnsutils sysytemd-timesyncd -y'
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo ln -f -s /bin/bash /bin/sh'
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo ln -sf '"$(readlink /etc/localtime)"' /etc/localtime'
 	sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'echo '"$(cat /etc/timezone)"' | sudo tee /etc/timezone'
@@ -330,8 +330,6 @@ if ! [ -f /etc/haproxy/haproxy.cfg ]; then
 fi
 
 systemctl stop haproxy
-apt install $SRC_PATH/libcrypt1_4.4.18-4_amd64.deb -y
-apt install $SRC_PATH/haproxy_2.4.18-1~bpo11+1_amd64.deb -y
 
 `which python3` ./$TOOLS_PATH/get_haproxy_conf.py $nodesNum $grpNum > /etc/haproxy/haproxy.cfg
 
