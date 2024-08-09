@@ -56,6 +56,15 @@ if [[ -z $checkPackage ]]; then
     apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils -y
     systemctl restart libvirtd
 
+    mkdir -p /etc/dnsmasq.d
+    
+    if [ -f /etc/dnsmasq.conf ]
+    then
+    sed -i -e '$aconf-dir=\/etc\/dnsmasq\.d' -e '/conf-dir=\/etc\/dnsmasq\.d/d' /etc/dnsmasq.conf
+    else
+      echo 'conf-dir=/etc/dnsmasq.d' | tee -a /etc/dnsmasq.conf
+    fi
+
     ## Настраиваем конфигурацию lxc-net
     cat << EOF | sudo tee /etc/default/lxc-net
 USE_LXC_BRIDGE="true"
@@ -68,6 +77,7 @@ LXC_DHCP_MAX="150"
 LXC_DHCP_CONFILE="/etc/dnsmasq.conf"
 LXC_DOMAIN=""
 EOF
+    
     systemctl restart lxc-net.service
 fi
 
@@ -144,15 +154,6 @@ then
     fi
 
     systemctl stop lxc-net.service
-
-    mkdir -p /etc/dnsmasq.d
-    
-    if [ -f /etc/dnsmasq.conf ]
-    then
-    sed -i -e '$aconf-dir=\/etc\/dnsmasq\.d' -e '/conf-dir=\/etc\/dnsmasq\.d/d' /etc/dnsmasq.conf
-    else
-      echo 'conf-dir=/etc/dnsmasq.d' | tee -a /etc/dnsmasq.conf
-    fi
 	
 	## Записи зон, определенных в файле ldap-domains
 	sed 's/#.*$//;/^$/d' $CONFIGS_PATH/ldap-domains | while read d
