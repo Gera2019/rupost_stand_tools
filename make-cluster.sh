@@ -140,7 +140,8 @@ then
 ## Выключаем сервис dnsmasq TODO проверка, что сервис есть вообще
     systemctl stop dnsmasq.service
     systemctl disable dnsmasq.service
-
+    
+    systemctl stop lxc-net.service
 ## Проверяем нет ли сервиса bind
 
     if [ "$(fuser 53/udp)" ] || [ "$(fuser 53/tcp)" ]
@@ -153,7 +154,7 @@ then
             exit 1
     fi
 
-    systemctl stop lxc-net.service
+    
 	
 	## Записи зон, определенных в файле ldap-domains
 	sed 's/#.*$//;/^$/d' $CONFIGS_PATH/ldap-domains | while read d
