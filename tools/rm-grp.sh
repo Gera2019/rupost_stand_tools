@@ -23,14 +23,16 @@ then
    do
       echo "Останавливаю $node"
       ipHost=$(sudo lxc-info -n $node -iH | head -1)
-      sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo poweroff'
+      if [ "$(sudo lxc-info -n $node -sH)" != "STOPPED" ]; then
+         sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo poweroff'
       
-      while [ "$(lxc-info -n $node -sH)" = "RUNNING" ]
-      do
-         printf "."
-         sleep 1
-      done
-      echo""
+         until [ $(sudo lxc-info -n $node -iH | head -1) ]
+         do
+            printf "."
+            sleep 1
+         done
+         echo""
+      fi
       lxc-destroy $node
    done
 
