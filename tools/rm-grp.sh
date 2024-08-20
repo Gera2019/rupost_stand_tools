@@ -19,13 +19,22 @@ then
  echo "Эти контейнеры будут удалены:" 
  echo "$(lxc-ls -1 | grep grp$NN)"
  sleep 5
+ for node in ${nodesList[@]};
+   do
+      echo "Останавливаю $node"
+      ipHost=$(sudo lxc-info -n $node -iH | head -1)
+      sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'poweroff'
+      
+      until [[ "$(lxc-info -n grp1-rupost1 -sH)" =~ "RUNNING" ]]
+      do
+         printf "."
+         sleep 1
+      done
+      echo""
+      lxc-destroy $node
+   done
 
  # Подчищаем DNS и hosts
  sed -i "/mail$NN/,$ d" /etc/dnsmasq.d/$HOSTDOMAIN
  sed -i "/grp$NN/,$ d" /etc/hosts
- for node in ${nodesList[*]};
- do
-    lxc-stop $node
-    lxc-destroy $node
- done
 fi
