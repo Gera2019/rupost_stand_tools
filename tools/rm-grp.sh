@@ -23,6 +23,7 @@ then
    do
       echo "Останавливаю $node"
       ipHost=$(sudo lxc-info -n $node -iH | head -1)
+      ssh-keygen -f "/root/.ssh/known_hosts" -R "$ipHost"
       if [ "$(sudo lxc-info -n $node -sH)" != "STOPPED" ]; then
          sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo poweroff'
       
