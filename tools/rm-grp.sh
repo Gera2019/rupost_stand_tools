@@ -25,7 +25,7 @@ then
       ipHost=$(sudo lxc-info -n $node -iH | head -1)
       sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo poweroff'
       
-      while [[ "$(lxc-info -n grp1-rupost1 -sH)" =~ "RUNNING" ]]
+      while [ "$(lxc-info -n $node -sH)" = "RUNNING" ]
       do
          printf "."
          sleep 1
