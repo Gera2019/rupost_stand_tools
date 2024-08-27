@@ -352,12 +352,6 @@ do
 done
 
 distNum=$(ls -1 $SRC_PATH | sed -n '/^rupost-[0-9]/ p' | wc -l)
-declare -A rupostDistr
-
-for ((i=1; i<=$distNum; i++))
-    do
-        rupostDistr[$i]=$(ls -1 src | sed -n '/^rupost-[0-9]/ p' | cut -d$'\n' -f $i)
-    done
 
 if [ $beginSetupIsTrue = "yes" ]; then
     
@@ -377,30 +371,40 @@ if [ $beginSetupIsTrue = "yes" ]; then
         fi
         distNum=$(ls -1 $SRC_PATH | sed -n '/^rupost-[0-9]/ p' | wc -l)
     done
+
+    declare -A rupostDistr
+
+    for ((i=1; i<=$distNum; i++))
+        do
+            rupostDistr[$i]=$(ls -1 src | sed -n '/^rupost-[0-9]/ p' | cut -d$'\n' -f $i)
+        done
+
+    if [[ $distNum -gt 0 ]]; then
+        echo "Были найдены следующие версии:"
+        
+        for version in "${!rupostDistr[@]}"
+        do
+            echo "$version) ${rupostDistr[$version]}"
+        done
+        
+        echo "Наберите цифру, соответствующую нужной версии"
+        read d
+        rupostInstall=${rupostDistr[$d]}
+    fi
+    
+    echo "Будет установлена версия РуПост - ${rupostDistr[$d]}"
+    echo "$SRC_PATH/${rupostDistr[$d]}"
+    sleep 6
+
+    for ((i=1; i<=$nodesNum; i++))
+        do
+            bash $TOOLS_PATH/install-rupost.sh -n $i -g $grpNum -d $SRC_PATH/${rupostDistr[$d]}
+        done
+
+else 
+    echo "Используйте $TOOLS_PATH/install-rupost.sh -n НомерКонтейнера -g Номер группы -d имя deb пакета дистрибутива RuPost'а"
 fi
 
-if [[ $distNum -gt 0 ]]; then
-    echo "Были найдены следующие версии:"
-    
-    for version in "${!rupostDistr[@]}"
-    do
-        echo "$version) ${rupostDistr[$version]}"
-    done
-    
-    echo "Наберите цифру, соответствующую нужной версии"
-    read d
-    rupostInstall=${rupostDistr[$d]}
-fi
-
-echo "Будет установлена версия РуПост - ${rupostDistr[$d]}"
-
-for ((i=1; i<=$nodesNum; i++))
-    do
-        bash $TOOLS_PATH/install-rupost.sh -n $i -g $grpNum -d $SRC_PATH/${rupostDistr[$d]}
-    done
-
-
-echo "Используйте $TOOLS_PATH/install-rupost.sh -n НомерКонтейнера -g Номер группы -d имя deb пакета дистрибутива RuPost'а"
 echo 'Для добавления нового узла используйте add_node.sh из директории $TOOLD_PATH'
 sleep 4
 echo "Готово"
