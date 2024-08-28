@@ -373,24 +373,20 @@ if [ $beginSetupIsTrue = "yes" ]; then
     done
 
     declare -A rupostDistr
+    i=1
 
-    for ((i=1; i<=$distNum; i++))
+    echo "Были найдены следующие версии:"
+    for item in $(ls -1 $SRC_PATH | sed -n '/^rupost-[0-9]/ p')
         do
-            rupostDistr[$i]=$(ls -1 src | sed -n '/^rupost-[0-9]/ p' | cut -d$'\n' -f $i)
+            rupostDistr[$i]=$item
+            echo "$i) $item"
+            i=$((i+1))           
         done
 
-    if [[ $distNum -gt 0 ]]; then
-        echo "Были найдены следующие версии:"
-        
-        for version in "${!rupostDistr[@]}"
-        do
-            echo "$version) ${rupostDistr[$version]}"
-        done
-        
-        echo "Наберите цифру, соответствующую нужной версии"
-        read d
-        rupostInstall=${rupostDistr[$d]}
-    fi
+    echo "Наберите цифру, соответствующую нужной версии"
+    read d
+    rupostInstall=${rupostDistr[$d]}
+
     
     echo "Будет установлена версия РуПост - ${rupostDistr[$d]}"
     echo "$SRC_PATH/${rupostDistr[$d]}"
