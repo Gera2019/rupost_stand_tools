@@ -25,9 +25,10 @@ then
       ipHost=$(sudo lxc-info -n $node -iH | head -1)
       ssh-keygen -f "/root/.ssh/known_hosts" -R "$ipHost"
       if [ "$(sudo lxc-info -n $node -sH)" != "STOPPED" ]; then
+         echo "Узел $node будет остановлен"
          sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo poweroff'
       
-         until [ $(sudo lxc-info -n $node -iH | head -1) ]
+         while [ $(sudo lxc-info -n $node -iH | head -1) ]
          do
             printf "."
             sleep 1
