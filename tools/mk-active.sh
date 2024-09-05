@@ -38,10 +38,6 @@ EOF
     exit 0
 fi
 
-if [ -z "$NN" ]; then
-    echo "Не указан номер группу, запустите команду снова с указанным номером группы"
-fi
-
 ## Активируем группу
 ##############################
 
@@ -69,11 +65,12 @@ else
 				sleep 2
 			done
 			echo ""
-			ipHost=$(sudo lxc-info -n $node -iH | head -1)
-			x=$(echo $node | tr -d -c [:digit:])
 		fi
-		sed -i -e '$a'"$ipHost"'\t'"$node"'' -e '/'"$node"'/d' /etc/hosts
-		[[ "$node" =~ "rupost" ]] && sed -i -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' -e '/mail"$x"/d' /etc/dnsmasq.d/$HOSTDOMAIN
+		ipHost=$(sudo lxc-info -n $node -iH | head -1)
+		x=$(echo $node | tr -d -c [:digit:])
+
+		sed -i -e '/'"$node"'/d' -e '$a'"$ipHost"'\t'"$node"'' /etc/hosts
+		[[ "$node" =~ "rupost" ]] && sed -i -e '/mail'"$x"'/d' -e '$aaddress=\/mail'"$x"'\.'"$HOSTDOMAIN"'\/'"$ipHost"'' /etc/dnsmasq.d/$HOSTDOMAIN
 	done
 
 	`which python3` ./get_haproxy_conf.py $(($nodesCount-1)) $NN > /etc/haproxy/haproxy.cfg
