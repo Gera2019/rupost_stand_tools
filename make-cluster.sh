@@ -10,6 +10,7 @@ SRC_PATH="./src"
 HOSTDOMAIN=$(sed -n '/^\s*#/!{p;q}' $CONFIGS_PATH/ldap-domains)
 HOSTNAME=mail.$HOSTDOMAIN
 
+NFS_STORES=(One Two Three)
 
 #####################################################################################
 
@@ -189,24 +190,27 @@ EOF
 	systemctl start lxc-net.service
 	
 ## Настроем сервер NFS и каталоги, необходимые для работы кластера RuPost
-	mkdir -p /srv/nfs/MailStorage
-	mkdir -p /srv/nfs/MailQueues
-	mkdir -p /srv/nfs/MailArchive
-	mkdir -p /srv/nfs/MailRecord
-	mkdir -p /srv/nfs/IndexFiles
-	chown 420:420 -R /srv/nfs
-
-	if [ -z "$(grep '/srv/nfs/MailQueues' /etc/exports | cut -f1 -d: | head -1)" ]
-	then
-    cat << EOF | tee --append /etc/exports
-/srv/nfs/MailQueues 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-/srv/nfs/MailStorage 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-/srv/nfs/MailArchive 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-/srv/nfs/MailRecord 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-/srv/nfs/IndexFiles 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+    if [ -z "$(grep '/srv/nfs/MailQueues' /etc/exports)" ]
+    then
+        mkdir -p /srv/nfs/MailQueues
+        mkdir -p /srv/nfs/IndexFiles
+        /srv/nfs/MailQueues 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+        /srv/nfs/IndexFiles 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+    fi
+    
+    for nfs from NFS_STORES
+    do
+	    mkdir -p /srv/nfs/$nfsStorage
+        mkdir -p /srv/nfs/$nfsArchive
+	    mkdir -p /srv/nfs/$nfsRecord
+	    
+        cat << EOF | tee --append /etc/exports
+/srv/nfs/$nfsStorage 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+/srv/nfs/$nfsArchive 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+/srv/nfs/$nfsRecord 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
 EOF
-	fi
-
+    done
+    chown 420:420 -R /srv/nfs
 	exportfs -ra
 	
 	## Создаем контейнеры-заготовки для БД Postgre и будущих RuPost-узлов
