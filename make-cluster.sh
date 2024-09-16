@@ -50,13 +50,14 @@ if [ -z "$nodesNum" ]; then
     nodesNum=2
 fi
 
-checkPackage=$(apt list lxc | grep -e "installed\|установлен")
-if [[ -z $checkPackage ]]; then
-    cat << EOF | tee /etc/apt/sources.list
+cat << EOF | tee /etc/apt/sources.list
 deb https://download.astralinux.ru/astra/frozen/$OS_x86-64/$OS_VERSION/uu/1/repository-main/ 1.8_x86-64 main contrib non-free
 deb https://download.astralinux.ru/astra/frozen/$OS_x86-64/$OS_VERSION/uu/1/repository-extended/ 1.8_x86-64 main contrib non-free
 EOF
 
+checkPackage=$(apt list lxc | grep -e "installed\|установлен")
+if [[ -z $checkPackage ]]; then
+    
     ## Устанавливаем необходимые пакеты для развертывания среды LXC
     apt update && apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy -y
     systemctl restart libvirtd
