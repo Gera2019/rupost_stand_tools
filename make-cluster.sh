@@ -2,7 +2,7 @@
 cd "$(dirname "$0")"
 
 OS_VERSION=$(cat /etc/astra_version)
-OS=$(cat /etc/astra_version  | cut -f2 -d.)
+OS=$(cat /etc/astra_version  | cut -c 1-3)
 
 ## Пути к дополнительным настройкам, пакетам и инструментам
 CONFIGS_PATH="./configs"
