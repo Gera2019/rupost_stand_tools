@@ -47,7 +47,7 @@ if [ -z "$nodesNum" ]; then
     nodesNum=2
 fi
 
-checkPackage=$(apt list lxc | grep installed)
+checkPackage=$(apt list lxc | grep -e "installed\|установлен")
 if [[ -z $checkPackage ]]; then
     sed -i 's/.*uu.*//g' /etc/apt/sources.list
     sed -i 's/\.*deb cdrom/\# deb cdrom/g' /etc/apt/sources.list
@@ -194,8 +194,10 @@ EOF
     then
         mkdir -p /srv/nfs/MailQueues
         mkdir -p /srv/nfs/IndexFiles
+        cat << EOF | tee --append /etc/exports
         /srv/nfs/MailQueues 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
         /srv/nfs/IndexFiles 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+EOF
     fi
     
     for nfs from NFS_STORES
