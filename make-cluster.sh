@@ -117,20 +117,15 @@ sed -i -e '$a10\.20\.30\.1\t'"$HOSTNAME" -e '/'"$HOSTNAME"'/d' /etc/hosts
 ## Если мы не находим родительского контейнера astra-se, то считаем, что установка "чистая" с нуля
 
 
-if [ -z "$(lxc-ls -1 | grep 'astra-se')" ]
-then
+if [ -z "$(lxc-ls -1 | grep 'astra-se')" ]; then
     echo "Создаём родительский контейнер astra-se"
     
-    sed -i 's/.*uu.*//g' /etc/apt/sources.list
-    sed -i 's/\.*deb cdrom/\# deb cdrom/g' /etc/apt/sources.list
-    sed -i 's/\#.*deb https/deb https/g' /etc/apt/sources.list
-    
-## Устанавливаем необходимые пакеты для развертывания среды LXC
+    ## Устанавливаем необходимые пакеты для развертывания среды LXC
     apt update
     apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils -y
     systemctl restart libvirtd
 
-## Создаём родительский контейнер astra-se на основе шаблона astralinux-se  
+    ## Создаём родительский контейнер astra-se на основе шаблона astralinux-se  
     lxc-create -t astralinux-se -n astra-se
     
     if [[ $? != 0 ]]
@@ -141,13 +136,13 @@ then
       exit 1
     fi
 	
-## Сетевые настройки
-## Выключаем сервис dnsmasq TODO проверка, что сервис есть вообще
+    ## Сетевые настройки
+    ## Выключаем сервис dnsmasq TODO проверка, что сервис есть вообще
     systemctl stop dnsmasq.service
     systemctl disable dnsmasq.service
     systemctl stop lxc-net.service
 
-## Проверяем нет ли сервиса bind
+    ## Проверяем нет ли сервиса bind
     if [ "$(fuser 53/udp)" ] || [ "$(fuser 53/tcp)" ]
         then
             echo "У Вас еще все запущен сервис на 53 порту (возможно bind)"
@@ -157,8 +152,6 @@ then
             echo "и перезапустите установку"
             exit 1
     fi
-
-    
 	
 	## Записи зон, определенных в файле ldap-domains
 	sed 's/#.*$//;/^$/d' $CONFIGS_PATH/ldap-domains | while read d
@@ -190,10 +183,9 @@ EOF
 	## Проброс dns-запросов
 
     cat $CONFIGS_PATH/dns-forwards | tee /etc/dnsmasq.d/forwards 
-
 	systemctl start lxc-net.service
 	
-## Настроем сервер NFS и каталоги, необходимые для работы кластера RuPost
+    ## Настроем сервер NFS и каталоги, необходимые для работы кластера RuPost
     if [ -z "$(grep '/srv/nfs/MailQueues' /etc/exports)" ]
     then
         mkdir -p /srv/nfs/MailQueues
@@ -204,7 +196,7 @@ EOF
 EOF
     fi
     
-    for nfs from NFS_STORES
+    for nfs in NFS_STORES
     do
 	    mkdir -p /srv/nfs/$nfsStorage
         mkdir -p /srv/nfs/$nfsArchive
