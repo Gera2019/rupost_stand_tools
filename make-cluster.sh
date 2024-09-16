@@ -51,8 +51,8 @@ if [ -z "$nodesNum" ]; then
 fi
 
 cat << EOF | tee /etc/apt/sources.list
-deb https://download.astralinux.ru/astra/frozen/$OS_x86-64/$OS_VERSION/uu/1/repository-main/ 1.8_x86-64 main contrib non-free
-deb https://download.astralinux.ru/astra/frozen/$OS_x86-64/$OS_VERSION/uu/1/repository-extended/ 1.8_x86-64 main contrib non-free
+deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/uu/1/repository-main/ 1.8_x86-64 main contrib non-free
+deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/uu/1/repository-extended/ 1.8_x86-64 main contrib non-free
 EOF
 
 checkPackage=$(apt list lxc | grep -e "installed\|установлен")
