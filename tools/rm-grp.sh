@@ -36,7 +36,7 @@ then
          done
          echo""
       fi
-      [[ $node =~ sql ]] &&  [[ OS_VERSION =~ "1.8" ]] && chattr -a $node/rootfs/parsec/log/astra/events
+      [[ "$node" =~ "sql" ]] &&  [[ "$OS_VERSION" =~ "1.8" ]] && chattr -a /var/lib/lxc/$node/rootfs/parsec/log/astra/events
       lxc-destroy $node
    done
 
