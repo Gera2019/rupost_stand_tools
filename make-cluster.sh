@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 cd "$(dirname "$0")"
 
-OS_VERSION=$(cat /etc/os-release | grep VERSION_ID | cut -f2 -d=)
+OS_VERSION=$(cat /etc/astra_version)
+OS=$(cat /etc/astra_version  | cut -f2 -d.)
 
 ## Пути к дополнительным настройкам, пакетам и инструментам
 CONFIGS_PATH="./configs"
@@ -51,12 +52,13 @@ fi
 
 checkPackage=$(apt list lxc | grep -e "installed\|установлен")
 if [[ -z $checkPackage ]]; then
-    sed -i 's/.*uu.*//g' /etc/apt/sources.list
-    sed -i 's/\.*deb cdrom/\# deb cdrom/g' /etc/apt/sources.list
-    sed -i 's/\#.*deb https/deb https/g' /etc/apt/sources.list
+    cat << EOF | tee /etc/apt/sources.list
+deb https://download.astralinux.ru/astra/frozen/$OS_x86-64/$OS_VERSION/uu/1/repository-main/ 1.8_x86-64 main contrib non-free
+deb https://download.astralinux.ru/astra/frozen/$OS_x86-64/$OS_VERSION/uu/1/repository-extended/ 1.8_x86-64 main contrib non-free
+EOF
+
     ## Устанавливаем необходимые пакеты для развертывания среды LXC
-    apt update
-    apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy -y
+    apt update && apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy -y
     systemctl restart libvirtd
 
     mkdir -p /etc/dnsmasq.d
