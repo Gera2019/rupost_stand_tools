@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 cd "$(dirname "$0")"
 
+OS_VERSION=$(cat /etc/os-release | grep VERSION_ID | cut -f2 -d=)
+
 ## Пути к дополнительным настройкам, пакетам и инструментам
 CONFIGS_PATH="./configs"
 TOOLS_PATH="./tools"

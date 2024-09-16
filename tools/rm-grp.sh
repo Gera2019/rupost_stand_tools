@@ -7,6 +7,8 @@ cd "$(dirname "$0")"
 CONFIGS_PATH="../configs"
 HOSTDOMAIN=$(sed -n '/^\s*#/!{p;q}' $CONFIGS_PATH/ldap-domains)
 
+OS_VERSION=$(cat /etc/os-release | grep VERSION_ID | cut -f2 -d=)
+
 if [ "$(whoami)" != "root" ]; then
     echo "Для запуска необходимы права суперпользователя" 1>&2
     exit 1
@@ -24,7 +26,7 @@ then
       echo "Останавливаю $node"
       ipHost=$(sudo lxc-info -n $node -iH | head -1)
       ssh-keygen -f "/root/.ssh/known_hosts" -R "$ipHost"
-      if [ "$(sudo lxc-info -n $node -sH)" != "STOPPED" ]; then
+      if [[ "$(lxc-info -n $node -sH)" != "STOPPED" ]]; then
          echo "Узел $node будет остановлен"
          sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo poweroff'
       
@@ -34,6 +36,7 @@ then
             sleep 1
          done
          echo""
+         [[ $node =~ sql ]] &&  [[ OS_VERSION =~ "1.8" ]] && chattr -a $node/rootfs/parsec/log/astra/events
       fi
       lxc-destroy $node
    done
