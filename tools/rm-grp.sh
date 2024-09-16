@@ -23,7 +23,6 @@ then
  sleep 5
  for node in ${nodesList[@]};
    do
-      echo "Останавливаю $node"
       ipHost=$(sudo lxc-info -n $node -iH | head -1)
       ssh-keygen -f "/root/.ssh/known_hosts" -R "$ipHost"
       if [[ "$(lxc-info -n $node -sH)" != "STOPPED" ]]; then
@@ -36,8 +35,8 @@ then
             sleep 1
          done
          echo""
-         [[ $node =~ sql ]] &&  [[ OS_VERSION =~ "1.8" ]] && chattr -a $node/rootfs/parsec/log/astra/events
       fi
+      [[ $node =~ sql ]] &&  [[ OS_VERSION =~ "1.8" ]] && chattr -a $node/rootfs/parsec/log/astra/events
       lxc-destroy $node
    done
 
