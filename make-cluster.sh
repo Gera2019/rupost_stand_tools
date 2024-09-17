@@ -57,7 +57,7 @@ checkPackage=$(apt list lxc | grep -e "installed\|установлен")
 if [[ -z $checkPackage ]]; then
     
     ## Устанавливаем необходимые пакеты для развертывания среды LXC
-    apt update && apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy -y
+    apt update && apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy systemd-timesyncd -y
     systemctl restart libvirtd
 
     mkdir -p /etc/dnsmasq.d
@@ -189,13 +189,13 @@ EOF
     then
         mkdir -p /srv/nfs/MailQueues
         mkdir -p /srv/nfs/IndexFiles
-        cat << EOF | tee --append /etc/exports
+        cat << EOF | tee /etc/exports
         /srv/nfs/MailQueues 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
         /srv/nfs/IndexFiles 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
 EOF
     fi
     
-    for nfs in NFS_STORES
+    for nfs in $NFS_STORES
     do
 	    mkdir -p /srv/nfs/"$nfs"Storage
         mkdir -p /srv/nfs/"$nfs"Archive
