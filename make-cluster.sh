@@ -190,8 +190,8 @@ EOF
         mkdir -p /srv/nfs/MailQueues
         mkdir -p /srv/nfs/IndexFiles
         cat << EOF | tee /etc/exports
-        /srv/nfs/MailQueues 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-        /srv/nfs/IndexFiles 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+/srv/nfs/MailQueues 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
+/srv/nfs/IndexFiles 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
 EOF
     fi
     
