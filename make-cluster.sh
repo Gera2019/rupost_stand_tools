@@ -50,12 +50,8 @@ if [ -z "$nodesNum" ]; then
     nodesNum=2
 fi
 
-cat << EOF | tee /etc/apt/sources.list
-# deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/uu/1/repository-main/ 1.8_x86-64 main contrib non-free
-# deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/uu/1/repository-extended/ 1.8_x86-64 main contrib non-free
-deb https://download.astralinux.ru/astra/stable/"$OS"_x86-64/repository-main/ 1.8_x86-64 main contrib non-free
-deb https://download.astralinux.ru/astra/stable/"$OS"_x86-64/repository-extended/ 1.8_x86-64 main contrib non-free
-EOF
+deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/main-repository/ "$OS"_x86-64 main contrib non-free > /etc/apt/sources.list
+deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/extended-repository/ "$OS"_x86-64 main contrib non-free >> /etc/apt/sources.list
 
 checkPackage=$(apt list lxc | grep -e "installed\|установлен")
 if [[ -z $checkPackage ]]; then
@@ -201,16 +197,15 @@ EOF
     
     for nfs in NFS_STORES
     do
-	    mkdir -p /srv/nfs/$nfsStorage
-        mkdir -p /srv/nfs/$nfsArchive
-	    mkdir -p /srv/nfs/$nfsRecord
+	    mkdir -p /srv/nfs/"$nfs"Storage
+        mkdir -p /srv/nfs/"$nfs"Archive
+	    mkdir -p /srv/nfs/"$nfs"Record
 	    
-        cat << EOF | tee --append /etc/exports
-/srv/nfs/$nfsStorage 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-/srv/nfs/$nfsArchive 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-/srv/nfs/$nfsRecord 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)
-EOF
+        /srv/nfs/"$nfs"Storage 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash) >> /etc/exports
+        /srv/nfs/"$nfs"Archive 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash) >> /etc/exports
+        /srv/nfs/"$nfs"Record 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash) >> /etc/exports
     done
+    
     chown 420:420 -R /srv/nfs
 	exportfs -ra
 	
