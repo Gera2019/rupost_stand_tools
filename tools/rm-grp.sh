@@ -29,7 +29,7 @@ then
          echo "Узел $node будет остановлен"
          sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin "$ipHost" 'sudo poweroff'
       
-         while [ $(sudo lxc-info -n $node -iH | head -1) ]
+         while [[ "$(lxc-info -n $node -sH)" != "STOPPED" ]]
          do
             printf "."
             sleep 1
