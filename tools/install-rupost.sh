@@ -86,7 +86,7 @@ done
 lxc-ls -f | grep grp
 
 ipNode=$(sudo lxc-info -n grp$grpNum-rupost"$NNODE" -iH | head -1)
-ssh-keygen -f '/root/.ssh/known_hosts' -R '$ipNode'
+ssh-keygen -f '/root/.ssh/known_hosts' -R '"$ipNode"'
 sshpass -p 'astralinux' ssh -o StrictHostKeyChecking=no -l admin $ipNode 'hostname'
 sshpass -p 'astralinux' scp $DISTR admin@$ipNode:/home/admin/
 
