@@ -195,7 +195,7 @@ EOF
 EOF
     fi
     
-    for nfs in $NFS_STORES
+    for nfs in ${NFS_STORES[@]}
     do
 	    mkdir -p /srv/nfs/"$nfs"Storage
         mkdir -p /srv/nfs/"$nfs"Archive
