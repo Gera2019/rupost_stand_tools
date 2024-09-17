@@ -201,9 +201,9 @@ EOF
         mkdir -p /srv/nfs/"$nfs"Archive
 	    mkdir -p /srv/nfs/"$nfs"Record
 	    
-        /srv/nfs/"$nfs"Storage 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash) >> /etc/exports
-        /srv/nfs/"$nfs"Archive 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash) >> /etc/exports
-        /srv/nfs/"$nfs"Record 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash) >> /etc/exports
+        echo "/srv/nfs/"$nfs"Storage 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
+        echo "/srv/nfs/"$nfs"Archive 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
+        echo "/srv/nfs/"$nfs"Record 10.20.30.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
     done
     
     chown 420:420 -R /srv/nfs
