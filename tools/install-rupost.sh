@@ -97,7 +97,7 @@ set -e
 cat << EOF | tee /tmp/run_inst.sh >/dev/null
 
 # Запускаем процесс
-sudo bash /home/admin/$distrName --  --skip-cluster-check -s  --db-host '$SQLIP' --db-port 5432 --db-user rupost --db-password rupost --db-name rupost --data-db-name rupost_data --logs-db-name rupost_logs &
+sudo bash /home/admin/$distrName --  --skip-cluster-check -s  --db-host '$SQLIP' --db-port 5432 --db-user rupost --db-password rupost --db-name rupost --data-db-name rupost_data &
 
 # Получаем PID запущенного процесса
 pid=\$!
