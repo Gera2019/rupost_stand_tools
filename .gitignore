@@ -49,4 +49,8 @@ Temporary Items
 # iCloud generated files
 *.icloud
 
+# Local folders
+stend_lxc.jpg
+src
+configs
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux
