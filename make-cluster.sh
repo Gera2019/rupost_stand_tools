@@ -50,8 +50,10 @@ if [ -z "$nodesNum" ]; then
     nodesNum=2
 fi
 
-echo "deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/repository-main/ "$OS"_x86-64 main contrib non-free" > /etc/apt/sources.list
-echo "deb https://download.astralinux.ru/astra/frozen/"$OS"_x86-64/$OS_VERSION/repository-extended/ "$OS"_x86-64 main contrib non-free" >> /etc/apt/sources.list
+echo "deb https://download.astralinux.ru/astra/stable/"$OS"_x86-64/repository-main/ "$OS"_x86-64 main contrib non-free" > /etc/apt/sources.list
+echo "deb https://download.astralinux.ru/astra/stable/"$OS"_x86-64/repository-extended/ "$OS"_x86-64 main contrib non-free" >> /etc/apt/sources.list
+echo "deb https://download.astralinux.ru/astra/stable/"$OS"_x86-64/repository-base/ "$OS"_x86-64 main contrib non-free" >> /etc/apt/sources.list
+echo "deb https://download.astralinux.ru/astra/stable/"$OS"_x86-64/repository-update/ "$OS"_x86-64 main contrib non-free" >> /etc/apt/sources.list
 
 checkPackage=$(apt list lxc | grep -e "installed\|установлен")
 if [[ -z $checkPackage ]]; then
