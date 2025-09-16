@@ -57,7 +57,7 @@ checkPackage=$(apt list lxc | grep -e "installed\|установлен")
 if [[ -z $checkPackage ]]; then
     
     ## Устанавливаем необходимые пакеты для развертывания среды LXC
-    apt update && apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy systemd-timesyncd -y
+    apt update && apt install lxc lxc-astra libvirt-daemon-driver-lxc sshpass nfs-kernel-server memcached dnsutils haproxy -y
     systemctl restart libvirtd
 
     mkdir -p /etc/dnsmasq.d
@@ -238,6 +238,8 @@ sudo su - postgres -c "psql -c \"alter user postgres with password 'rupost'\""
 sudo su - postgres -c "psql -c \"CREATE ROLE rupost WITH NOSUPERUSER CREATEDB NOCREATEROLE LOGIN ENCRYPTED PASSWORD 'rupost';\""
 sudo su - postgres -c "psql -c \"CREATE DATABASE rupost WITH ENCODING 'UTF8' OWNER rupost;\""
 sudo su - postgres -c "psql -c \"CREATE DATABASE rupost_data WITH ENCODING 'UTF8' OWNER rupost;\""
+sudo su - postgres -c "psql -d rupost -c \"create extension if not exists ltree;\""
+sudo su - postgres -c "psql -d rupost -c \"create extension if not exists pgcrypto;\""
 sudo su - postgres -c "psql -c \"CREATE DATABASE rupost_logs WITH ENCODING 'UTF8' OWNER rupost;\""
 EOF
 
