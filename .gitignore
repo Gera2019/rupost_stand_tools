@@ -51,6 +51,6 @@ Temporary Items
 
 # Local folders
 stend_lxc.jpg
-src
-configs
+src/
+configs/
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux
